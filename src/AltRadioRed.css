@@ -1,0 +1,34 @@
+/* Custom radio alternative style for red theme */
+.alt-radio-red {
+  @apply border border-gray-200 rounded-lg p-4 flex items-center cursor-pointer transition-colors duration-200;
+}
+.alt-radio-red input[type="radio"] {
+  @apply hidden;
+}
+.alt-radio-red .custom-radio {
+  @apply w-4 h-4 border-2 border-gray-400 rounded-full mr-4 flex-shrink-0 flex items-center justify-center transition-colors duration-200;
+}
+.alt-radio-red.selected {
+  @apply bg-red-800 border-red-800;
+  background-color: rgba(153,27,27,0.08) !important;
+  color: #111827 !important; /* text-gray-900 */
+}
+.alt-radio-red.selected .custom-radio {
+  @apply border-red-800;
+}
+.alt-radio-red.selected .custom-radio svg circle {
+  fill: #991B1B;
+  fill-opacity: 0.9;
+}
+.alt-radio-red .label-text {
+  @apply text-base font-medium transition-colors duration-200;
+  color: #374151 !important; /* text-gray-700 */
+}
+.alt-radio-red .label-text .alt-letter {
+  color: #991B1B !important; /* text-red-800 */
+  font-weight: 600;
+  margin-right: 0.25rem;
+}
+.alt-radio-red.selected .label-text {
+  color: #111827 !important; /* text-gray-900 */
+}
