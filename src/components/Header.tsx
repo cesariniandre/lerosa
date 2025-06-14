@@ -20,13 +20,21 @@ export function Header(props: HeaderProps) {
              className="h-10 cursor-pointer" 
              onClick={props.onRestart} 
            />
-           {/* 2. Adicionar span Home */}
-           <span 
-             className="ml-16 text-gray-300 hover:text-white cursor-pointer transition-colors duration-200" 
-             onClick={props.onRestart} 
-           >
-             Questionário
-           </span>
+           {/* Links de navegação */}
+           <div className="flex items-center ml-16 space-x-8">
+             <span 
+               className="text-gray-300 hover:text-white cursor-pointer transition-colors duration-200" 
+               onClick={props.onRestart} 
+             >
+               Questionário
+             </span>
+             <Link 
+               to="/informacoes-pessoais" 
+               className="text-gray-300 hover:text-white transition-colors duration-200"
+             >
+               Informações Pessoais
+             </Link>
+           </div>
         </div>
 
         {/* Botão para ir para o painel */}

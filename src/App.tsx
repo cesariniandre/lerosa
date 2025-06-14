@@ -4,11 +4,12 @@ import { Header } from './components/Header';
 import { QuestionnaireLayout } from './components/QuestionnaireLayout';
 import { QuestionCard } from './components/QuestionCard';
 import { PriorityQuestion } from './components/PriorityQuestion';
-import { Panel } from './components/Panel';
-import { ResultsPage } from './components/ResultsPage';
+import { Panel } from './pages/Panel';
+import { ResultsPage } from './pages/ResultsPage';
 import { questions, priorityQuestion } from './utils/questions';
 import { NavigationButtons } from './components/NavigationButtons';
-import { CadastrarCliente } from './components/CadastrarCliente';
+import { CadastrarCliente } from './pages/CadastrarCliente';
+import { InformacoesPessoais } from './pages/InformacoesPessoais';
 
 interface GraphData {
   radar: Record<string, number>;
@@ -169,6 +170,11 @@ function AppContent() {
            </div>
         } />
         <Route path="/cadastrar-cliente" element={<CadastrarCliente />} />
+        <Route path="/informacoes-pessoais" element={
+          <div className="container mx-auto p-4 md:p-6">
+            <InformacoesPessoais />
+          </div>
+        } />
       </Routes>
     </div>
   );
