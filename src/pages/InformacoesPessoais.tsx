@@ -6,7 +6,9 @@ import { useNavigate } from 'react-router-dom';
 
 export function InformacoesPessoais() {
   const navigate = useNavigate();
+  const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
+    // Step 1 - Informações Pessoais
     nome: '',
     dataNascimento: '',
     telefone: '',
@@ -18,6 +20,13 @@ export function InformacoesPessoais() {
     temFilhos: '',
     nomeFilho1: '',
     dataNascimentoFilho1: '',
+    
+    // Step 2 - Informações Financeiras
+    valorInicial: '',
+    temInvestimentoMensal: 'sim',
+    valorInvestimentoMensal: '',
+    temRetiradaMensal: 'sim',
+    valorRetiradaMensal: '',
   });
 
   const [showSpouseFields, setShowSpouseFields] = useState(false);
@@ -87,45 +96,95 @@ export function InformacoesPessoais() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Dados do formulário:', formData);
-    // Aqui você pode adicionar a navegação para a próxima página
-    alert('Formulário enviado com sucesso!');
+    
+    if (currentStep < 5) {
+      setCurrentStep(currentStep + 1);
+    } else {
+      console.log('Dados do formulário completo:', formData);
+      alert('Formulário enviado com sucesso!');
+      // Aqui você pode adicionar a navegação para a próxima página
+    }
+  };
+  
+  const handlePrevStep = () => {
+    if (currentStep > 1) {
+      setCurrentStep(currentStep - 1);
+    } else {
+      navigate('/');
+    }
+  };
+  
+  const handleCurrencyInput = (e: React.ChangeEvent<HTMLInputElement>, fieldName: string) => {
+    let value = e.target.value.replace(/\D/g, '');
+    
+    // Convert to number and format as currency
+    if (value) {
+      const numberValue = parseInt(value, 10) / 100;
+      value = numberValue.toLocaleString('pt-BR', {
+        style: 'currency',
+        currency: 'BRL'
+      }).replace('R$', '').trim();
+    }
+    
+    setFormData({
+      ...formData,
+      [fieldName]: value
+    });
+  };
+
+  // Helper function to get step title
+  const getStepTitle = () => {
+    switch(currentStep) {
+      case 1: return "Informações Pessoais";
+      case 2: return "Informações Financeiras";
+      case 3: return "Objetivos";
+      case 4: return "Experiência";
+      case 5: return "Revisão";
+      default: return "Informações Pessoais";
+    }
   };
 
   return (
     <div className="w-full max-w-[1180px] mx-auto pt-0 pb-8">
-      <PageTitle>Informações Pessoais</PageTitle>
+      <PageTitle>{getStepTitle()}</PageTitle>
       
-      <div className="text-center mb-4">
-        <p className="text-sm text-gray-600 mb-2">1 / 5</p>
+      <div className="text-center mb-8">
+        <p className="text-sm text-gray-600 mb-2">{currentStep} / 5</p>
         <div className="h-1 bg-gray-200 rounded-full max-w-3xl mx-auto">
-          <div className="h-full bg-[#7f1c1d] rounded-full" style={{ width: '20%' }}></div>
+          <div 
+            className="h-full bg-[#7f1c1d] rounded-full" 
+            style={{ width: `${currentStep * 20}%` }}
+          ></div>
         </div>
       </div>
       
       <motion.div
+        key={currentStep}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="bg-white rounded-lg shadow-md p-8 max-w-3xl mx-auto mb-8"
+        className="bg-white rounded-lg shadow-md pt-8 px-8 pb-6 max-w-3xl mx-auto mb-8"
       >
         <form onSubmit={handleSubmit}>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-            <div className="col-span-1">
-              <label htmlFor="nome" className="block text-sm font-medium text-gray-700 mb-1">
-                Nome Completo
-              </label>
-              <input
-                type="text"
-                id="nome"
-                name="nome"
-                value={formData.nome}
-                onChange={handleInputChange}
-                placeholder="Digite seu nome completo"
-                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-[#7f1c1d] focus:border-[#7f1c1d]"
-                required
-              />
-            </div>
+          {currentStep === 1 ? (
+            // Step 1: Informações Pessoais
+            <div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div className="col-span-1">
+                  <label htmlFor="nome" className="block text-sm font-medium text-gray-700 mb-1">
+                    Nome Completo
+                  </label>
+                  <input
+                    type="text"
+                    id="nome"
+                    name="nome"
+                    value={formData.nome}
+                    onChange={handleInputChange}
+                    placeholder="Digite seu nome completo"
+                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-[#7f1c1d] focus:border-[#7f1c1d]"
+                    required
+                  />
+                </div>
             <div className="col-span-1">
               <label htmlFor="dataNascimento" className="block text-sm font-medium text-gray-700 mb-1">
                 Data de nascimento
@@ -340,7 +399,7 @@ export function InformacoesPessoais() {
                 <div className="flex justify-start">
                   <button
                     type="button"
-                    className="flex items-center bg-[#f0e7e7] text-[#7f1c1d] rounded-md px-6 py-3 font-medium hover:bg-[#e8dcdc] transition-colors"
+                    className="flex items-center bg-[#f0e7e7] text-[#7f1c1d] rounded-md px-6 h-8 font-medium hover:bg-[#e8dcdc] transition-colors"
                   >
                     <span className="text-xl mr-2">+</span> Adicionar
                   </button>
@@ -348,24 +407,135 @@ export function InformacoesPessoais() {
               </div>
             )}
           </div>
-          
-          <div className="flex justify-between mt-8">
-            <button
-              type="button"
-              onClick={() => navigate('/')}
-              className="flex items-center px-5 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-md"
-            >
-              <ChevronLeft className="h-4 w-4 mr-1" /> Voltar
-            </button>
-            <button
-              type="submit"
-              className="flex items-center px-5 py-2 bg-[#7f1c1d] hover:bg-[#9a1a1b] text-white rounded-md"
-            >
-              Avançar <ChevronRight className="h-4 w-4 ml-1" />
-            </button>
-          </div>
+            </div>
+          ) : (
+            // Step 2: Informações Financeiras
+            <div>
+              <div className="mb-6">
+                <label htmlFor="valorInicial" className="block text-sm font-medium text-gray-700 mb-1">
+                  Valor inicial da Carteira
+                </label>
+                <input
+                  type="text"
+                  id="valorInicial"
+                  name="valorInicial"
+                  value={formData.valorInicial}
+                  onChange={(e) => handleCurrencyInput(e, 'valorInicial')}
+                  placeholder="Digite o nome completo"
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-[#7f1c1d] focus:border-[#7f1c1d]"
+                />
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div className="col-span-1">
+                  <p className="block text-sm font-medium text-gray-700 mb-2">Terá investimento mensal?</p>
+                  <div className="flex gap-6">
+                    <label className="flex items-center cursor-pointer">
+                      <input
+                        type="radio"
+                        name="temInvestimentoMensal"
+                        id="temInvestimentoMensal_sim"
+                        value="sim"
+                        checked={formData.temInvestimentoMensal === 'sim'}
+                        onChange={handleInputChange}
+                        className="mr-2 appearance-none w-5 h-5 border-2 border-gray-300 rounded-full checked:border-[#7f1c1d] relative after:content-[''] after:absolute after:w-2.5 after:h-2.5 after:rounded-full after:top-1/2 after:left-1/2 after:-translate-x-1/2 after:-translate-y-1/2 after:bg-[#7f1c1d] after:scale-0 checked:after:scale-100 after:transition-transform"
+                      />
+                      <span className="text-sm text-gray-700">Sim</span>
+                    </label>
+                    <label className="flex items-center cursor-pointer">
+                      <input
+                        type="radio"
+                        name="temInvestimentoMensal"
+                        id="temInvestimentoMensal_nao"
+                        value="nao"
+                        checked={formData.temInvestimentoMensal === 'nao'}
+                        onChange={handleInputChange}
+                        className="mr-2 appearance-none w-5 h-5 border-2 border-gray-300 rounded-full checked:border-[#7f1c1d] relative after:content-[''] after:absolute after:w-2.5 after:h-2.5 after:rounded-full after:top-1/2 after:left-1/2 after:-translate-x-1/2 after:-translate-y-1/2 after:bg-[#7f1c1d] after:scale-0 checked:after:scale-100 after:transition-transform"
+                      />
+                      <span className="text-sm text-gray-700">Não</span>
+                    </label>
+                  </div>
+                  {formData.temInvestimentoMensal === 'sim' && (
+                    <div className="mt-4">
+                      <input
+                        type="text"
+                        id="valorInvestimentoMensal"
+                        name="valorInvestimentoMensal"
+                        value={formData.valorInvestimentoMensal}
+                        onChange={(e) => handleCurrencyInput(e, 'valorInvestimentoMensal')}
+                        placeholder="Valor do investimento mensal: Ex: R$ 5.000,00"
+                        className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-[#7f1c1d] focus:border-[#7f1c1d]"
+                      />
+                    </div>
+                  )}
+                </div>
+                
+                <div className="col-span-1">
+                  <p className="block text-sm font-medium text-gray-700 mb-2">Terá retirada mensal?</p>
+                  <div className="flex gap-6">
+                    <label className="flex items-center cursor-pointer">
+                      <input
+                        type="radio"
+                        name="temRetiradaMensal"
+                        id="temRetiradaMensal_sim"
+                        value="sim"
+                        checked={formData.temRetiradaMensal === 'sim'}
+                        onChange={handleInputChange}
+                        className="mr-2 appearance-none w-5 h-5 border-2 border-gray-300 rounded-full checked:border-[#7f1c1d] relative after:content-[''] after:absolute after:w-2.5 after:h-2.5 after:rounded-full after:top-1/2 after:left-1/2 after:-translate-x-1/2 after:-translate-y-1/2 after:bg-[#7f1c1d] after:scale-0 checked:after:scale-100 after:transition-transform"
+                      />
+                      <span className="text-sm text-gray-700">Sim</span>
+                    </label>
+                    <label className="flex items-center cursor-pointer">
+                      <input
+                        type="radio"
+                        name="temRetiradaMensal"
+                        id="temRetiradaMensal_nao"
+                        value="nao"
+                        checked={formData.temRetiradaMensal === 'nao'}
+                        onChange={handleInputChange}
+                        className="mr-2 appearance-none w-5 h-5 border-2 border-gray-300 rounded-full checked:border-[#7f1c1d] relative after:content-[''] after:absolute after:w-2.5 after:h-2.5 after:rounded-full after:top-1/2 after:left-1/2 after:-translate-x-1/2 after:-translate-y-1/2 after:bg-[#7f1c1d] after:scale-0 checked:after:scale-100 after:transition-transform"
+                      />
+                      <span className="text-sm text-gray-700">Não</span>
+                    </label>
+                  </div>
+                  {formData.temRetiradaMensal === 'sim' && (
+                    <div className="mt-4">
+                      <input
+                        type="text"
+                        id="valorRetiradaMensal"
+                        name="valorRetiradaMensal"
+                        value={formData.valorRetiradaMensal}
+                        onChange={(e) => handleCurrencyInput(e, 'valorRetiradaMensal')}
+                        placeholder="Valor da retirada mensal: Ex: R$ 12.000,00"
+                        className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-[#7f1c1d] focus:border-[#7f1c1d]"
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
         </form>
       </motion.div>
+      
+      <div className="flex justify-between mt-8 max-w-3xl mx-auto">
+        <button
+          type="button"
+          onClick={handlePrevStep}
+          className="flex items-center px-5 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-md"
+        >
+          <ChevronLeft className="h-4 w-4 mr-1" /> Voltar
+        </button>
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            document.querySelector('form')?.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+          }}
+          className="flex items-center px-5 py-2 bg-[#7f1c1d] hover:bg-[#9a1a1b] text-white rounded-md"
+        >
+          Avançar <ChevronRight className="h-4 w-4 ml-1" />
+        </button>
+      </div>
     </div>
   );
 }
